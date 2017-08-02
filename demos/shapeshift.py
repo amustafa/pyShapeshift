@@ -312,7 +312,7 @@ def validate_address(address, coin_symbol):
     return response.json()
 
 
-def send_normal_tx(withdrawal_address, input_coin, output_coin,
+def create_normal_tx(withdrawal_address, input_coin, output_coin,
             return_address=None,
             destination_tag=None,
             rs_address=None,
@@ -393,7 +393,7 @@ def request_email_receipt(email, tx_id):
     return response.json()
 
 
-def send_fixed_amount_tx(amount, withdrawal_address, input_coin, output_coin,
+def create_fixed_amount_tx(amount, withdrawal_address, input_coin, output_coin,
             return_address=None,
             destination_tag=None,
             rs_address=None,
@@ -530,7 +530,7 @@ if __name__ == "__main__":
     print(get_recent_tx_list(10))
 
     btc_addr = '1JVgLgLvWhr8hVy2AKy2T59fVAHhpJ8jT2'
-    print(send_normal_tx(
+    print(create_normal_tx(
         btc_addr,
         'ltc',
         'btc',
