@@ -346,18 +346,17 @@ def create_normal_tx(withdrawal_address, input_coin, output_coin,
     """
     url_path = "shift"
     url = BASE_URL % url_path
+
     payload = {
         'withdrawal': withdrawal_address,
-        'pair': "{}_{}".format(input_coin, output_coin)
+        'pair': "{}_{}".format(input_coin, output_coin),
+        'returnAddress': return_address,
+        'destTag': destination_tag,
+        'rsAddress': rs_address,
+        'apiKey': api_key
     }
-    if return_address is not None:
-        payload['returnAddress'] = return_address
-    if destination_tag is not None:
-        payload['destTag'] = destination_tag
-    if rs_address is not None:
-        payload['rsAddress'] = rs_address
-    if api_key is not None:
-        payload['apiKey'] = api_key
+
+    payload = {k: v for k, v in payload.items() if v is not None}
 
     response = requests.post(url, data=payload)
     return response.json()
@@ -478,16 +477,16 @@ def create_fixed_amount_tx(amount, withdrawal_address, input_coin, output_coin,
     payload = {
         'amount': amount,
         'withdrawal': withdrawal_address,
-        'pair': "{}_{}".format(input_coin, output_coin)
+        'pair': "{}_{}".format(input_coin, output_coin),
+        'returnAddress': return_address,
+        'destTag': destination_tag,
+        'rsAddress': rs_address,
+        'apiKey': api_key
     }
-    if return_address is not None:
-        payload['returnAddress'] = return_address
-    if destination_tag is not None:
-        payload['destTag'] = destination_tag
-    if rs_address is not None:
-        payload['rsAddress'] = rs_address
-    if api_key is not None:
-        payload['apiKey'] = api_key
+
+    # Filter out values that are None
+    payload = {k: v for k, v in payload.items() if v is not None}
+
     response = requests.post(url, data=payload)
     return response.json()
 
