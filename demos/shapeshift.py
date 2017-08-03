@@ -11,6 +11,29 @@ import requests
 BASE_URL = 'https://shapeshift.io/%s'
 
 
+def _shapeshift_get_request(url_path):
+    """
+    Combines the provided url_path with Shapeshift's base url and performs a get request.
+    """
+    url = BASE_URL % url_path
+    response = requests.get(url)
+    return response.json()
+
+
+def _shapeshift_post_request(url_path, payload):
+    """
+    Combines the provided url_path with Shapeshift's base url and performs
+    a post request with the provided payoad
+    """
+    url = BASE_URL % url_path
+
+    # Filter out any values that are None
+    payload = {k: v for k, v in payload.items() if v is not None}
+
+    response = requests.post(url, data=payload)
+    return response.json()
+
+
 def get_coins():
     """
     Gets a list of coins currently supported by Shapeshift.
@@ -36,9 +59,7 @@ def get_coins():
     unexpected service issues.
     """
     url_path = 'getcoins'
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_rate(input_coin, output_coin):
@@ -59,9 +80,7 @@ def get_rate(input_coin, output_coin):
     }
     """
     url_path = "rate/{}_{}".format(input_coin, output_coin)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_deposit_limit(input_coin, output_coin):
@@ -80,9 +99,7 @@ def get_deposit_limit(input_coin, output_coin):
     }
     """
     url_path = "limit/{}_{}".format(input_coin, output_coin)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_market_info(input_coin, output_coin):
@@ -105,9 +122,7 @@ def get_market_info(input_coin, output_coin):
     }
     """
     url_path = "marketinfo/{}_{}".format(input_coin, output_coin)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_recent_tx_list(max_transactions):
@@ -134,9 +149,7 @@ def get_recent_tx_list(max_transactions):
     """
     assert 1 <= max_transactions <= 50
     url_path = "recenttx/{}".format(max_transactions)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_tx_status(address):
@@ -182,9 +195,7 @@ def get_tx_status(address):
 
     """
     url_path = "txStat/{}".format(address)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_time_remaining_on_fixed_tx(address):
@@ -208,9 +219,7 @@ def get_time_remaining_on_fixed_tx(address):
     If the status is expired then seconds_remaining will show 0.
     """
     url_path = "timeremaining/{}".format(address)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_tx_by_api_key(api_key):
@@ -243,9 +252,7 @@ def get_tx_by_api_key(api_key):
     """
 
     url_path = "txbyapikey/{}".format(api_key)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def get_tx_by_address(address, api_key):
@@ -279,9 +286,7 @@ def get_tx_by_address(address, api_key):
     The status can be  "received", "complete", "returned", "failed".
     """
     url_path = "txbyapikey/{}/{}".format(address, api_key)
-    url = BASE_URL % url_path
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def validate_address(address, coin_symbol):
@@ -306,17 +311,14 @@ def validate_address(address, coin_symbol):
     isValid will either be true or false. If isvalid returns false, an error parameter will be present and will contain a descriptive error message.
     """
     url_path = "validateAddress/{}/{}".format(address, coin_symbol)
-    url = BASE_URL % url_path
-    print(url)
-    response = requests.get(url)
-    return response.json()
+    return _shapeshift_get_request(url_path)
 
 
 def create_normal_tx(withdrawal_address, input_coin, output_coin,
-            return_address=None,
-            destination_tag=None,
-            rs_address=None,
-            api_key=None):
+           return_address=None,
+           destination_tag=None,
+           rs_address=None,
+           api_key=None):
     """
     This is the primary data input. Creates a deposit address.
 
@@ -345,7 +347,6 @@ def create_normal_tx(withdrawal_address, input_coin, output_coin,
     }
     """
     url_path = "shift"
-    url = BASE_URL % url_path
 
     payload = {
         'withdrawal': withdrawal_address,
@@ -356,10 +357,7 @@ def create_normal_tx(withdrawal_address, input_coin, output_coin,
         'apiKey': api_key
     }
 
-    payload = {k: v for k, v in payload.items() if v is not None}
-
-    response = requests.post(url, data=payload)
-    return response.json()
+    return _shapeshift_post_request(url_path, payload)
 
 
 def request_email_receipt(email, tx_id):
@@ -383,13 +381,13 @@ def request_email_receipt(email, tx_id):
     }
     """
     url_path = "mail"
-    url = BASE_URL % url_path
+
     payload = {
         'email': email,
         'txid': tx_id
     }
-    response = requests.post(url, data=payload)
-    return response.json()
+
+    return _shapeshift_post_request(url_path, payload)
 
 
 def create_fixed_amount_tx(amount, withdrawal_address, input_coin, output_coin,
@@ -473,7 +471,7 @@ def create_fixed_amount_tx(amount, withdrawal_address, input_coin, output_coin,
     """
 
     url_path = "sendamount"
-    url = BASE_URL % url_path
+
     payload = {
         'amount': amount,
         'withdrawal': withdrawal_address,
@@ -484,11 +482,7 @@ def create_fixed_amount_tx(amount, withdrawal_address, input_coin, output_coin,
         'apiKey': api_key
     }
 
-    # Filter out values that are None
-    payload = {k: v for k, v in payload.items() if v is not None}
-
-    response = requests.post(url, data=payload)
-    return response.json()
+    return _shapeshift_post_request(url_path, payload)
 
 
 def cancel_tx(address):
@@ -512,12 +506,12 @@ def cancel_tx(address):
      {  error  : {errorMessage}  }
     """
     url_path = "cancelpending"
-    url = BASE_URL % url_path
+
     payload = {
         'address': address,
     }
-    response = requests.post(url, data=payload)
-    return response.json()
+
+    return _shapeshift_post_request(url_path, payload)
 
 
 if __name__ == "__main__":
