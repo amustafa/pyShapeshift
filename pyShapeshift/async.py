@@ -1,3 +1,8 @@
+"""
+Async Shapeshift API
+
+Uses the asyncio library and aiohttp to create an awaitable API.
+"""
 from .shapeshift_api import ShapeshiftAPI
 from . import request_fns
 
