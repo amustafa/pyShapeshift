@@ -1,9 +1,8 @@
 """
-Shapeshift.io Sync API
+Request Functions
 
-Implemenets all the API calls on Shapeshift.io with async requests
-
-All documentation is taken from https://info.shapeshift.io
+Request function use in the shapeshift api to allow the class
+to either be async or sync.
 """
 import aiohttp
 import requests

@@ -1,3 +1,8 @@
+"""
+Sync Shapeshift API
+
+Uses requests to create an awaitable API.
+"""
 from .shapeshift_api import ShapeshiftAPI
 from . import request_fns
 
